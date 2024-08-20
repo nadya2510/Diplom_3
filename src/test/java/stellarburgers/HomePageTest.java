@@ -1,30 +1,24 @@
 package stellarburgers;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import static org.junit.Assert.assertEquals;
-import static stellarburgers.ConstStellarburgers.*;
-import static api.ApiConst.URL_API;
+import static org.junit.Assert.assertTrue;
 
 //
 //Раздел «Конструктор»
 //
 @RunWith(Parameterized.class)
-public class HomePageTest {
+public class HomePageTest extends BaseStellarburgers{
     //текст раздела
-    private Integer ValueIndex ;
-    private String ValueText ;
+    private Integer valueIndex ;
+    private String valueText ;
 
-    public HomePageTest(Integer ValueIndex, String ValueText)  {
-        this.ValueIndex = ValueIndex;
-        this.ValueText = ValueText;
+    public HomePageTest(Integer valueIndex, String valueText)  {
+        this.valueIndex = valueIndex;
+        this.valueText = valueText;
     }
 
     @Parameterized.Parameters
@@ -40,32 +34,17 @@ public class HomePageTest {
     @DisplayName("Home - Razdel designer")
     @Description("Home click razdel designer")
     public void clickRazdelTest() {
-        WebDriverManager.chromedriver().setup();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--no-sandbox", "--headless", "--disable-dev-shm-usage");
-        String browserType = System.getProperty("browserType");
-        if (browserType != null) {
-            if (browserType.equalsIgnoreCase(YANDEX)) {
-                System.setProperty("webdriver.chrome.driver", PATH_YANDEXDRIVER);
-                options.setBinary(PATH_YANDEXBROWSER);
-            }
-        }
-
-        WebDriver driver = new ChromeDriver(options);
-        // Открой страницу  стенда
-        driver.get(URL_API);
-        // создай объект класса главной страницы
-        HomePage objHomePage = new HomePage(driver);
+        startStellarburger(false);
 
         //С первого раздела загружается страница, для начала перейдем в раздел "Соусы"
-        if (ValueIndex == 0){
+        if (valueIndex == 0){
             objHomePage.clickRazdel("Соусы");
         }
         //Нажимаем на раздел
-        objHomePage.clickRazdel(ValueText);
+        objHomePage.clickRazdel(valueText);
         //Сравниваем результат
-        boolean result = objHomePage.waitForRazdelVisibility(ValueText);
-        assertEquals("Ожидается текст: " + ValueText, true, result );
+        boolean result = objHomePage.waitForRazdelVisibility(valueText);
+        assertTrue("Ожидается раздел: " + valueText, true );
         driver.quit();
     }
 

@@ -1,66 +1,22 @@
 package stellarburgers;
 
-import api.ApiStellarburgers;
-import api.RegisterIn;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import java.util.Random;
-import static org.junit.Assert.assertEquals;
-import static stellarburgers.ConstStellarburgers.*;
-import static api.ApiConst.URL_API;
+import static org.junit.Assert.assertTrue;
 
 //вход по кнопке «Войти в аккаунт» на главной,
 //вход через кнопку «Личный кабинет»,
 //вход через кнопку в форме регистрации,
 //вход через кнопку в форме восстановления пароля.
-public class AuthorizationTest {
-    private WebDriver driver;
-    private HomePage objHomePage;
-    private LoginPage objLoginPage;
-    private AccountProfilePage objAccountProfilePage;
-    private ForgotPasswordPage objForgotPasswordPage;
-    private RegisterPage obgRegisterPage;
-    private String email;
-    private String password;
-    private String username;
-    private RegisterIn jsonLog;
-    private ApiStellarburgers apiStellarburgers = new ApiStellarburgers();
+public class AuthorizationTest extends BaseStellarburgers{
 
     @Before
     public void tearup() {
-        WebDriverManager.chromedriver().setup();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--no-sandbox", "--headless", "--disable-dev-shm-usage");
-        String browserType = System.getProperty("browserType");
-        if (browserType != null) {
-            if (browserType.equalsIgnoreCase(YANDEX)) {
-                System.setProperty("webdriver.chrome.driver", PATH_YANDEXDRIVER);
-                options.setBinary(PATH_YANDEXBROWSER);
-            }
-        }
-
-        driver = new ChromeDriver(options);
-        // Cтраница стенда
-        driver.get(URL_API);
-        // создай объект класса главной страницы
-        objHomePage = new HomePage(driver);
-
-        //Создадим пользователя
-        Integer random = new Random().nextInt();
-        email = String.format("test-data%d@yandex.ru", random);
-        password = "password123";
-        username = String.format("Username%d", random);
-        RegisterIn json  = new RegisterIn(email, password, username);
-        String accessToken =  apiStellarburgers.doRegisterRequest(json);
-        jsonLog = new RegisterIn(email, password, username, accessToken);
+        startStellarburger(true);
     }
 
     // Войдем по кнопке «Войти в аккаунт»
@@ -109,14 +65,13 @@ public class AuthorizationTest {
     @Test
     @DisplayName("Register - Login")
     @Description("Register go to Login page to click Login")
-  //  @Step("Click Login button in Register Page")
     public void registerPageLogin() {
         //«Войти в аккаунт» на главной
         objLoginPage = objHomePage.clickLoginAccount();
         //«Зарегистрироваться» на странице войти
-        obgRegisterPage = objLoginPage.clickRegister();
+        objRegisterPage = objLoginPage.clickRegister();
         //«Войти» на странице регистрации
-        objLoginPage = obgRegisterPage.clickLogin();
+        objLoginPage = objRegisterPage.clickLogin();
         //Заполнить поля и «Войти»
         clickLoginPageLogin(email, password);
         loginCheck();
@@ -133,7 +88,7 @@ public class AuthorizationTest {
     @Step("Login check")
     public void loginCheck(){
         boolean result = objHomePage.waitForOrdersVisibility();
-        assertEquals("Ожидается «Конструктор» ",true, result);
+        assertTrue("Ожидается «Конструктор»", result);
     }
 
     @After

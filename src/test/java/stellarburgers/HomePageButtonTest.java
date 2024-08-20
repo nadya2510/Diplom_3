@@ -2,52 +2,25 @@ package stellarburgers;
 
 import api.ApiStellarburgers;
 import api.RegisterIn;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import java.util.Random;
-import static org.junit.Assert.assertEquals;
-import static stellarburgers.ConstStellarburgers.*;
-import static api.ApiConst.URL_API;
+import static org.junit.Assert.assertTrue;
 
 //Переход по клику на «Личный кабинет» без авторизации.
 //Переход по клику на «Личный кабинет» c авторизацией.
 //Переход по клику на «Войти в аккаунт» без авторизации.
 
 
-public class HomePageButtonTest {
-    private WebDriver driver;
-    private HomePage objHomePage;
-    private LoginPage objLoginPage;
-    private AccountProfilePage objAccountProfilePage;
-    private RegisterIn jsonLog;
-    private ApiStellarburgers apiStellarburgers = new ApiStellarburgers();
+public class HomePageButtonTest extends BaseStellarburgers {
 
     @Before
     public void tearup() {
-        WebDriverManager.chromedriver().setup();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--no-sandbox", "--headless", "--disable-dev-shm-usage");
-        String browserType = System.getProperty("browserType");
-        if (browserType != null) {
-            if (browserType.equalsIgnoreCase(YANDEX)) {
-                System.setProperty("webdriver.chrome.driver", PATH_YANDEXDRIVER);
-                options.setBinary(PATH_YANDEXBROWSER);
-            }
-        }
-
-        driver = new ChromeDriver(options);
-        // Cтраница стенда
-        driver.get(URL_API);
-        // создай объект класса главной страницы
-        objHomePage = new HomePage(driver);
+        startStellarburger(false);
     }
 
     //Переход на страницу авторизации по «Войти в аккаунт»
@@ -59,7 +32,7 @@ public class HomePageButtonTest {
         //если нажать на «Войти в аккаунт» без авторизации, попадёшь на страницу авторизации
         objLoginPage = objHomePage.clickLoginAccount();
         boolean result = objLoginPage.getHIn();
-        assertEquals("Ожидается страница авторизации через кнопку «Войти в аккаунт» ",true, result);
+        assertTrue("Ожидается страница авторизации через кнопку «Войти в аккаунт» ", result);
     }
 
     //Переход на страницу авторизации по «Личный кабинет»
@@ -71,7 +44,7 @@ public class HomePageButtonTest {
         //если нажать на «Личный кабинет» без авторизации, попадёшь на страницу авторизации
         objLoginPage = objHomePage.clickPersonalAccountLogout();
         boolean result = objLoginPage.getHIn();
-        assertEquals("Ожидается страница авторизации через кнопку «Личный кабинет» ",true, result);
+        assertTrue("Ожидается страница авторизации через кнопку «Личный кабинет» ", result);
     }
 
     //Переход в личный кабинет с авторизацией по «Личный кабинет»
@@ -87,6 +60,7 @@ public class HomePageButtonTest {
         String username = String.format("Username%d", random);
         RegisterIn json  = new RegisterIn(email, password, username);
         //
+        apiStellarburgers = new ApiStellarburgers();
         String accessToken =  apiStellarburgers.doRegisterRequest(json);
         jsonLog = new RegisterIn(email, password, username, accessToken);
 
@@ -100,7 +74,7 @@ public class HomePageButtonTest {
         objAccountProfilePage = objHomePage.clickPersonalAccountLogin();
         //если нажать на «Личный кабинет» с авторизацией, попадёшь на страницу «Личный кабинет»
         boolean result = objAccountProfilePage.getProfile();
-        assertEquals("Ожидается страница «Личный кабинет» ",true, result);
+        assertTrue("Ожидается страница «Личный кабинет» ", result);
     }
 
     @After

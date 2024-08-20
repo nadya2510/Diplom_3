@@ -14,6 +14,8 @@ public class HomePage  extends BasePage{
     private By buttonLoginAccount = By.xpath(".//*[text()='Войти в аккаунт']");
     //Кнопка "Оформить заказ"
     private By buttonOrders = By.xpath(".//*[text()='Оформить заказ']");
+    //Текущий раздел
+    private By buttonRazdel = By.xpath(".//div[@class='tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect']/span");
 
     public HomePage(WebDriver driver) {
         super(driver);
@@ -38,17 +40,17 @@ public class HomePage  extends BasePage{
 
     // метод выбора раздела по названию
     public void clickRazdel(String razdelName) {
-        // клик по разделу
-        driver.findElement(By.xpath(String.format(".//span[text()='%s']", razdelName))).click();
-
-}
-
-    // метод проверки с ожиданием видимости раздела
-    public boolean waitForRazdelVisibility(String razdelName) {
-
+        String spanRazdel = String.format(".//span[text()='%s']", razdelName);
         new WebDriverWait(driver, 15)
-                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath(String.format(".//h2[text()='%s']", razdelName))));
-        return driver.findElement(By.xpath(String.format(".//h2[text()='%s']", razdelName))).isDisplayed();
+                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath(spanRazdel)));
+        // клик по разделу
+        driver.findElement(By.xpath(spanRazdel)).click();
+    }
+
+    public boolean waitForRazdelVisibility(String razdelName) {
+        new WebDriverWait(driver, 15)
+                .until(ExpectedConditions.visibilityOfElementLocated(buttonRazdel));
+        return driver.findElement(buttonRazdel).getText().equalsIgnoreCase(razdelName);
     }
 
     // метод с ожиданием видимости конструктора
